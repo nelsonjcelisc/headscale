@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: headscale-config
+  namespace: connectivity
+data:
+  config.yaml: |
+    server_url: http://headscale.cdo.local
+    listen_addr: 0.0.0.0:8080
+    metrics_listen_addr: 0.0.0.0:9090
+    grpc_listen_addr: 0.0.0.0:50443
+    grpc_allow_insecure: true
+    # --- ESTA LÍNEA ES LA QUE SALVA EL DÍA ---
+    unix_socket: /var/lib/headscale/headscale.sock
+    # -----------------------------------------
+    private_key_path: /var/lib/headscale/private.key
+    noise:
+     private_key_pth: /var/lib/headscale/noise_private.key
+    database:
+      type: sqlite3
+      sqlite:
+        path: /var/lib/headscale/db.sqlite
+    prefixes:
+      v4: 100.64.0.0/10
+      v6: fd7a:115c:a1e0::/48
+    derp:
+      server:
+        enabled: true
+        region_id: 999
+        region_code: "oso-cloud"
+        stun_listen_addr: "0.0.0.0:3478"
+        private_key_path: /var/lib/headscale/derp_server_private.key
+    dns:
+      magic_dns: true
+      base_domain: vpn.cdo.local
+      nameservers:
+        global:
+          - 192.168.32.202

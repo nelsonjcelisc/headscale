@@ -1,0 +1,25 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: headscale-user-provisioner
+  namespace: connectivity
+spec:
+  template:
+    spec:
+      containers:
+      - name: setup
+        image: alpine:latest
+        command: ["/bin/sh", "-c"]
+        args:
+          - |
+            echo "Esperando a que Headscale responda..."
+            # Instalamos curl rápido para chequear el servicio
+            apk add --no-cache curl
+            until curl -s http://headscale-service:8080/healthz; do
+              sleep 2
+            done
+            echo "Creando usuario nelson..."
+            # Aquí usamos el binario de headscale dentro del pod mediante kubectl exec (requiere RBAC)
+            # O mejor, usamos un script que se conecte vía gRPC si quisieras ser súper pro.
+            # Pero para tu caso, lo más sencillo es un script de entrada en el Deployment (ver paso 2).
+      restartPolicy: OnFailure
